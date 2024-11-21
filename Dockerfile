@@ -10,7 +10,7 @@ COPY settings.gradle .
 COPY src ./src
 
 # Build the application
-RUN gradle build -x test
+RUN ./gradlew build -x test
 
 # Run stage
 FROM openjdk:11-jre-slim
