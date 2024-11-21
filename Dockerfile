@@ -1,28 +1,30 @@
 # Build stage
 FROM gradle:7.6.0-jdk11 AS build
 
-# Set the working directory
 WORKDIR /app
 
-# Copy build files
+# 필요한 파일 복사
 COPY build.gradle .
 COPY settings.gradle .
+COPY gradlew .
+COPY gradlew.bat .
+COPY gradle ./gradle
 COPY src ./src
 
-# Build the application
-RUN ./gradlew build -x test
+# Gradle Wrapper 실행 권한 부여
+RUN chmod +x gradlew
+
+# 빌드 수행
+RUN ./gradlew build -x test --info
 
 # Run stage
 FROM openjdk:11-jre-slim
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the built jar file from the build stage
+# 빌드 결과 복사
 COPY --from=build /app/build/libs/*.jar app.jar
 
-# Expose port 8080
 EXPOSE 8080
 
-# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
